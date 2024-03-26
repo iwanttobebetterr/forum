@@ -2,9 +2,10 @@
 
 import AppLayout from "@/Layouts/AppLayout.vue";
 import Container from "@/Components/Container.vue";
+import Pagination from "@/Components/Pagination.vue";
 
 defineProps({
-    posts: Array
+    posts: Object
 })
 
 </script>
@@ -13,10 +14,12 @@ defineProps({
     <AppLayout title="posts">
         <Container>
             <ul>
-                <li v-for="post in posts" :key="post.id">
+                <li v-for="post in posts.data" :key="post.id">
                     {{ post.title }}
                 </li>
             </ul>
+
+            <Pagination :meta="posts.meta"></Pagination>
         </Container>
     </AppLayout>
 </template>
