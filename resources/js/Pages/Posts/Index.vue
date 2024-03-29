@@ -6,12 +6,13 @@ import Pagination from "@/Components/Pagination.vue";
 import {Head, Link, router, usePage} from '@inertiajs/vue3';
 import {computed} from "vue";
 import {formatDistance, parseISO} from "date-fns";
+import {relativeDate} from "@/Utilities/date.js";
 
 const props = defineProps({
     posts: Object
 })
 
-const formattedDate = (post) => formatDistance(parseISO(post.created_at), new Date());
+const formattedDate = (post) => relativeDate(post.created_at);
 
 </script>
 
