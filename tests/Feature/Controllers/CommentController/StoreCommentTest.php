@@ -2,8 +2,17 @@
 
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Support\Str;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
+
+it('requires authentication', function () {
+    $post = Post::factory()->create();
+
+    \Pest\Laravel\post(route('posts.comments.store', $post), [
+        'body' => 'This is a comment',
+    ])->assertRedirect(route('login'));
+});
 
 it('can store a comment', function () {
     $user = User::factory()->create();
@@ -40,5 +49,5 @@ it('requires a body', function () {
 })->with([
     null,
     1.5,
-    \Illuminate\Support\Str::random(2501)
+    Str::random(2501)
 ]);
