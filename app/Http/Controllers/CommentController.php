@@ -8,20 +8,9 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $this->authorizeResource(Comment::class);
     }
 
     /**
@@ -29,29 +18,15 @@ class CommentController extends Controller
      */
     public function store(Request $request, Post $post)
     {
+        $data = $request->validate(['body' => ['required', 'string', 'max:2500']]);
+
         Comment::create([
-            ...$request->validate(['body' => 'required|string|max:2500']),
+            ...$data,
+            'post_id' => $post->id,
             'user_id' => $request->user()->id,
-            'post_id' => $post->id
         ]);
 
-        return redirect()->route('posts.show', $post);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Comment $comment)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Comment $comment)
-    {
-        //
+        return to_route('posts.show', $post);
     }
 
     /**
@@ -59,20 +34,20 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment)
     {
-        //
+        $data = $request->validate(['body' => ['required', 'string', 'max:2500']]);
+
+        $comment->update($data);
+
+        return to_route('posts.show', ['post' => $comment->post_id, 'page' => $request->query('page')]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment, Request $request)
+    public function destroy(Request $request, Comment $comment)
     {
-        $this->authorize('delete', $comment);
         $comment->delete();
 
-        return redirect()->route('posts.show', [
-            'post' => $comment->post_id,
-            'page' => $request->query('page', 1)
-        ]);
+        return to_route('posts.show', ['post' => $comment->post_id, 'page' => $request->query('page')]);
     }
 }

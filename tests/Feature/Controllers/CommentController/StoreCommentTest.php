@@ -1,17 +1,15 @@
 <?php
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
-use Illuminate\Support\Str;
+
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\post;
 
 it('requires authentication', function () {
-    $post = Post::factory()->create();
-
-    \Pest\Laravel\post(route('posts.comments.store', $post), [
-        'body' => 'This is a comment',
-    ])->assertRedirect(route('login'));
+    post(route('posts.comments.store', Post::factory()->create()))
+        ->assertRedirect(route('login'));
 });
 
 it('can store a comment', function () {
@@ -22,32 +20,35 @@ it('can store a comment', function () {
         'body' => 'This is a comment',
     ]);
 
-    assertDatabaseHas('comments', [
-        'body' => 'This is a comment',
-        'user_id' => $user->id,
+    $this->assertDatabaseHas(Comment::class, [
         'post_id' => $post->id,
+        'user_id' => $user->id,
+        'body' => 'This is a comment',
     ]);
 });
 
-it('redirects to the post after storing a comment', function () {
-    $user = User::factory()->create();
+it('redirects to the post show page', function () {
     $post = Post::factory()->create();
 
-    actingAs($user)->post(route('posts.comments.store', $post), [
-        'body' => 'This is a comment',
-    ])->assertRedirect(route('posts.show', $post));
+    actingAs(User::factory()->create())
+        ->post(route('posts.comments.store', $post), [
+            'body' => 'This is a comment',
+        ])
+        ->assertRedirect(route('posts.show', $post));
 });
 
-// test the body is valid
-it('requires a body', function () {
-    $user = User::factory()->create();
+it('requires a valid body', function ($value) {
     $post = Post::factory()->create();
 
-    actingAs($user)->post(route('posts.comments.store', $post), [
-        'body' => '',
-    ])->assertInvalid('body');
+    actingAs(User::factory()->create())
+        ->post(route('posts.comments.store', $post), [
+            'body' => $value,
+        ])
+        ->assertInvalid('body');
 })->with([
     null,
+    1,
     1.5,
-    Str::random(2501)
+    true,
+    str_repeat('a', 2501),
 ]);
