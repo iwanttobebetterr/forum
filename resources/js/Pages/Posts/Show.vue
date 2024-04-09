@@ -8,19 +8,27 @@
             <div class="mt-4">
                 <h2 class="text-xl font-semibold">Comments</h2>
 
-                <form class="mt-4" @submit.prevent="addComment">
+                <form class="mt-4" @submit.prevent="() => commentIdBeingEdited ? updateComment() : addComment()">
                     <div>
                         <InputLabel for="body" value="Comment" class="sr-only"/>
-                        <TextArea id="body" v-model="commentForm.body" rows="4" placeholder="Speak your mind Spock…"/>
+                        <TextArea ref="commentTextAreaRef" id="body" v-model="commentForm.body" rows="4" placeholder="Speak your mind Spock…"/>
                         <InputError :message="commentForm.errors.body" class="mt-1"/>
                     </div>
 
-                    <PrimaryButton class="mt-2" :disabled="commentForm.processing">Add Comment</PrimaryButton>
+                    <PrimaryButton
+                        class="mt-2" :disabled="commentForm.processing"
+                        v-text="commentIdBeingEdited ? 'Update' : 'Comment'"
+                    />
+                    <SecondaryButton
+                        v-if="commentIdBeingEdited"
+                        @click="commentIdBeingEdited = null; commentForm.reset()"
+                        class="mt-2 ml-2"
+                    >Cancel</SecondaryButton>
                 </form>
 
                 <ul class="divide-y mt-4">
                     <li v-for="comment in comments.data" :key="comment.id" class="px-2 py-4">
-                        <Comment :comment="comment" @delete="deleteComment"/>
+                        <Comment :comment="comment" @delete="deleteComment" @edit="editComment"/>
                     </li>
                 </ul>
 
@@ -42,6 +50,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextArea from "@/Components/TextArea.vue";
 import InputError from "@/Components/InputError.vue";
+import {computed, ref} from "vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 const props = defineProps({
     post: Object,
@@ -52,7 +62,17 @@ const commentForm = useForm({
     body: '',
 })
 
+
+
 const addComment = () => commentForm.post(route('posts.comments.store', props.post.id), {
+    preserveScroll: true,
+    onSuccess: () => commentForm.reset(),
+})
+
+const updateComment = () => commentForm.put(route('comments.update', {
+    comment: commentIdBeingEdited.value,
+    page: props.comments.meta.current_page,
+}), {
     preserveScroll: true,
     onSuccess: () => commentForm.reset(),
 })
@@ -60,5 +80,14 @@ const addComment = () => commentForm.post(route('posts.comments.store', props.po
 const deleteComment = (commentId) => router.delete(route('comments.destroy', { comment: commentId, page: props.comments.meta.current_page }), {
     preserveScroll: true,
 });
+
+const commentTextAreaRef = ref(null);
+const commentIdBeingEdited = ref(null);
+const commentBeingEdited = computed(() => props.comments.data.find(comment => comment.id === commentIdBeingEdited.value));
+const editComment = (commentId) => {
+    commentIdBeingEdited.value = commentId;
+    commentForm.body = commentBeingEdited.value?.body;
+    commentTextAreaRef.value?.focus();
+};
 
 </script>
