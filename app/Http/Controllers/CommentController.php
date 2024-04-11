@@ -26,7 +26,7 @@ class CommentController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        return to_route('posts.show', $post)->banner('Comment added successfully');
+        return redirect($post->showRoute())->banner('Comment added successfully');
     }
 
     /**
