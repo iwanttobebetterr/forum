@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $users = User::factory(10)->create();
 
-        $posts = Post::factory(200)->has(Comment::factory(15)->recycle($users))->recycle($users)->create();
+        $posts = Post::factory(200)->has(Comment::factory(15)->recycle($users))->create();
 
         $luke = User::factory()
             ->has(Post::factory(45))
@@ -26,5 +26,8 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Luke Downing',
                 'email' => 'test@example.com',
             ]);
+
+        $lastPost = Post::latest()->first();
+        Comment::factory(50)->for($lastPost)->for($luke)->create();
     }
 }

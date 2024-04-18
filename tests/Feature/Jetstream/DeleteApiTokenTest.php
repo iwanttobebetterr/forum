@@ -4,7 +4,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 
 test('api tokens can be deleted', function () {
     if (! Features::hasApiFeatures()) {

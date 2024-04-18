@@ -3,7 +3,7 @@
 use Laravel\Fortify\Features;
 use Laravel\Jetstream\Jetstream;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 
 test('registration screen can be rendered', function () {
     if (! Features::enabled(Features::registration())) {

@@ -39,7 +39,7 @@ Route::middleware([
     Route::resource('posts.comments', CommentController::class)->shallow()->only(['store', 'update', 'destroy']);
 });
 
-Route::get('posts/{post}/{slug?}', [PostController::class, 'show'])
+Route::get('posts/{post}/{slug}', [PostController::class, 'show'])
     ->name('posts.show')
     ->where('post', '[0-9]+');
 Route::resource('posts', PostController::class)->only(['index']);

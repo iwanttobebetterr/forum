@@ -38,7 +38,8 @@ class CommentController extends Controller
 
         $comment->update($data);
 
-        return to_route('posts.show', ['post' => $comment->post_id, 'page' => $request->query('page')])->banner('Comment updated successfully');
+        return redirect($comment->post->showRoute($request->query()))
+            ->banner('Comment updated successfully');
     }
 
     /**
@@ -48,6 +49,7 @@ class CommentController extends Controller
     {
         $comment->delete();
 
-        return to_route('posts.show', ['post' => $comment->post_id, 'page' => $request->query('page')])->banner('Comment deleted successfully');
+        return redirect($comment->post->showRoute($request->query()))
+            ->banner('Comment deleted successfully');
     }
 }

@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 
 test('profile information can be updated', function () {
     $this->actingAs($user = User::factory()->create());

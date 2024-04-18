@@ -3,7 +3,7 @@
 use App\Models\User;
 use Laravel\Fortify\Features;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 
 test('two factor authentication can be enabled', function () {
     if (! Features::canManageTwoFactorAuthentication()) {

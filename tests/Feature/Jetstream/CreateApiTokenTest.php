@@ -3,7 +3,7 @@
 use App\Models\User;
 use Laravel\Jetstream\Features;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 
 test('api tokens can be created', function () {
     if (! Features::hasApiFeatures()) {
