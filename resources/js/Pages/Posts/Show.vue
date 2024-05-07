@@ -1,9 +1,9 @@
 <template>
     <AppLayout :title="post.title">
         <Container>
-            <h1 class="text-2xl font-bold">{{ post.title }}</h1>
+            <PageHeading>{{ post.title }}</PageHeading>
             <span class="block mt-1 text-sm text-gray-600">{{ relativeDate(post.created_at) }} ago by {{post.user.name}}</span>
-            <article class="mt-6"><pre class="whitespace-pre-wrap font-sans">{{ post.body }}</pre></article>
+            <article class="mt-6 prose prose-sm max-w-none" v-html="post.html"></article>
 
             <div class="mt-4">
                 <h2 class="text-xl font-semibold">Comments</h2>
@@ -11,7 +11,7 @@
                 <form class="mt-4" @submit.prevent="() => commentIdBeingEdited ? updateComment() : addComment()">
                     <div>
                         <InputLabel for="body" value="Comment" class="sr-only"/>
-                        <TextArea ref="commentTextAreaRef" id="body" v-model="commentForm.body" rows="4" placeholder="Speak your mind Spock…"/>
+                        <MarkdownEditor ref="commentTextAreaRef" id="body" v-model="commentForm.body" editor-class="min-h-[160px]" placeholder="Write your comment"/>
                         <InputError :message="commentForm.errors.body" class="mt-1"/>
                     </div>
 
@@ -53,6 +53,8 @@ import InputError from "@/Components/InputError.vue";
 import {computed, ref} from "vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import useConfirm from "@/Composables/useConfirm.js";
+import MarkdownEditor from "@/Components/MarkdownEditor.vue";
+import PageHeading from "@/Components/PageHeading.vue";
 
 const props = defineProps({
     post: Object,
